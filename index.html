@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="./bower_components/raphael/raphael-min.js"></script>
+    <style>
+        html {background: #333}
+        #status {
+            position: absolute;
+            top: 20px;
+            left:20px;
+            font: 100 36px Helvetica,Arial,sans-serif;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="status">Draw your dots...</div>
+    <script>
+        function Par(top, a, b) {
+            this.top = top;
+            this.a = a;
+            this.b = b;
+
+            this.center = a.getCenterBetween(b);
+            this.bottom = this.center.getReflectionOf(top);
+            this.area = getParallelogramArea(this.top, this.a, this.b);
+        }
+
+        function getParallelogramArea(top, a, b) {
+            var at = a.distanceTo(top);
+            var bt = b.distanceTo(top);
+            var ab = a.distanceTo(b);
+
+            /**
+             * Calculus:
+             *
+             * ab = ah + bh
+             * h^2 = at^2 - ah^2
+             * h^2 = bt^2 - bh^2
+             *
+             * at^2 - ah^2 = bt^2 - (ab - ah)^2
+             * at^2 - ah^2 = bt^2 - ab^2 + 2*ab*ah - ah^2
+             *
+             * @type {number}
+             */
+            var ah = (at * at - bt * bt + ab * ab) / (2 * ab);
+            var height = Math.sqrt(at * at - ah * ah);
+
+            return ab * height;
+        }
+
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        Point.prototype.getCenterBetween = function (point) {
+            return new Point(
+                (this.x + point.x) / 2,
+                (this.y + point.y) / 2
+            );
+        };
+
+        Point.prototype.getReflectionOf = function (point) {
+            return new Point(
+                2 * this.x - point.x,
+                2 * this.y - point.y
+            );
+        };
+
+        Point.prototype.distanceTo = function (point) {
+            var xDiff = this.x - point.x;
+            var yDiff = this.y - point.y;
+            return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        };
+
+        function Circle(point, radius) {
+            this.center = point;
+            this.radius = radius || 11;
+        }
+
+        Circle.prototype.drawAt = function (paper, color) {
+            this.element = paper.circle(
+                this.center.x,
+                this.center.y,
+                this.radius
+            );
+            this.element.attr({
+                fill: color || '#f00',
+                stroke: 'none',
+            });
+            return this;
+        };
+
+        function CompactPar(p1, p2, p3) {
+            var d12 = p1.distanceTo(p2);
+            var d23 = p2.distanceTo(p3);
+            var d31 = p3.distanceTo(p1);
+            var maxDistance = Math.max.call(null, d12, d23, d31);
+            var top = maxDistance === d12
+                ? p3
+                : maxDistance === d23
+                    ? p1
+                    : p2;
+            var base = [p1, p2, p3].filter(function (p) {
+                return p !== top;
+            });
+            return new Par(top, base[0], base[1]);
+        }
+
+        var par = new Par(
+            new Point(500, 200),
+            new Point(200, 200),
+            new Point(350, 360)
+        );
+
+        var paper = Raphael(0, 0, '100%', '100%');
+        new Circle(par.top).drawAt(paper, 'IndianRed');
+        new Circle(par.a).drawAt(paper, 'red');
+        new Circle(par.b).drawAt(paper, 'Crimson');
+        new Circle(par.bottom, 3).drawAt(paper, 'lime');
+        new Circle(par.center, 1).drawAt(paper, 'yellow');
+
+        var pathDesc = Raphael.fullfill(
+            'M{b.x},{b.y}' +
+            'L{bottom.x},{bottom.y}' +
+            'L{a.x},{a.y}' +
+            'L{top.x},{top.y}' +
+            'Z',
+            par
+        );
+        paper.path(pathDesc).attr({
+            stroke: 'lightblue'
+        });
+
+        var r = Math.sqrt(par.area / Math.PI);
+        new Circle(par.center, r).drawAt(paper).element.attr({fill: null, stroke: 'yellow'})
+
+    </script>
+</body>
+</html>

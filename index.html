@@ -77,24 +77,6 @@
             return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
         };
 
-        function Circle(point, radius) {
-            this.center = point;
-            this.radius = radius || 11;
-        }
-
-        Circle.prototype.drawAt = function (paper, color) {
-            this.element = paper.circle(
-                this.center.x,
-                this.center.y,
-                this.radius
-            );
-            this.element.attr({
-                fill: color || '#f00',
-                stroke: 'none',
-            });
-            return this;
-        };
-
         function CompactParallelogram(p1, p2, p3) {
             var d12 = p1.distanceTo(p2);
             var d23 = p2.distanceTo(p3);
@@ -111,34 +93,50 @@
             return new Parallelogram(top, base[0], base[1]);
         }
 
+        function Drawer(paper) {
+            this.paper = paper;
+        }
+
+        Drawer.prototype.circle = function (center, radius) {
+            return this.paper.circle(center.x, center.y, radius || 1);
+        };
+
+        Drawer.prototype.colorCircle = function (center, color, radius) {
+            return this.circle(center, radius).attr({
+                stroke: null,
+                fill: color
+            });
+        };
+
+        Drawer.prototype.enclosedPath = function (points) {
+            var coordPairs = points.map(function (point) {
+                return point.x + ',' + point.y;
+            });
+            return this.paper.path('M' + coordPairs.join('L') + 'Z');
+        };
+
         var par = new Parallelogram(
             new Point(500, 200),
             new Point(200, 200),
             new Point(350, 360)
         );
 
-        var paper = Raphael(0, 0, '100%', '100%');
-        new Circle(par.top).drawAt(paper, 'IndianRed');
-        new Circle(par.a).drawAt(paper, 'red');
-        new Circle(par.b).drawAt(paper, 'Crimson');
-        new Circle(par.bottom, 3).drawAt(paper, 'lime');
-        new Circle(par.center, 1).drawAt(paper, 'yellow');
+        var drwr = new Drawer(Raphael(0, 0, '100%', '100%'));
 
-        var pathDesc = Raphael.fullfill(
-            'M{b.x},{b.y}' +
-            'L{bottom.x},{bottom.y}' +
-            'L{a.x},{a.y}' +
-            'L{top.x},{top.y}' +
-            'Z',
-            par
-        );
-        paper.path(pathDesc).attr({
+        drwr.colorCircle(par.top, 'IndianRed', 11);
+        drwr.colorCircle(par.a, 'red', 11);
+        drwr.colorCircle(par.b, 'Crimson', 11);
+
+        drwr.colorCircle(par.bottom, 'lime', 3);
+        drwr.colorCircle(par.center, 'yellow');
+
+        var radius = Math.sqrt(par.area / Math.PI);
+        drwr.circle(par.center, radius).attr({
+            stroke: 'yellow'
+        });
+        drwr.enclosedPath([par.b, par.bottom, par.a, par.top]).attr({
             stroke: 'lightblue'
         });
-
-        var r = Math.sqrt(par.area / Math.PI);
-        new Circle(par.center, r).drawAt(paper).element.attr({fill: null, stroke: 'yellow'})
-
     </script>
 </body>
 </html>

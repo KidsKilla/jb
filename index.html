@@ -93,26 +93,22 @@
             return new Parallelogram(top, base[0], base[1]);
         }
 
-        function Drawer(paper) {
-            this.paper = paper;
-        }
-
-        Drawer.prototype.circle = function (center, radius) {
-            return this.paper.circle(center.x, center.y, radius || 1);
-        };
-
-        Drawer.prototype.colorCircle = function (center, color, radius) {
-            return this.circle(center, radius).attr({
-                stroke: null,
-                fill: color
-            });
-        };
-
-        Drawer.prototype.enclosedPath = function (points) {
+        Raphael.fn.enclosedPathByPoints = function (points) {
             var coordPairs = points.map(function (point) {
                 return point.x + ',' + point.y;
             });
-            return this.paper.path('M' + coordPairs.join('L') + 'Z');
+            return this.path('M' + coordPairs.join('L') + 'Z');
+        };
+
+        Raphael.fn.circleByPoint = function (center, radius) {
+            return this.circle(center.x, center.y, radius || 1);
+        };
+
+        Raphael.el.paint = function (color) {
+            return this.attr({
+                stroke: null,
+                fill: color
+            });
         };
 
         var par = new Parallelogram(
@@ -121,22 +117,18 @@
             new Point(350, 360)
         );
 
-        var drwr = new Drawer(Raphael(0, 0, '100%', '100%'));
+        var paper = Raphael(0, 0, '100%', '100%');
 
-        drwr.colorCircle(par.top, 'IndianRed', 11);
-        drwr.colorCircle(par.a, 'red', 11);
-        drwr.colorCircle(par.b, 'Crimson', 11);
+        paper.circleByPoint(par.top, 11).paint('IndianRed');
+        paper.circleByPoint(par.a, 11).paint('red');
+        paper.circleByPoint(par.b, 11).paint('Crimson');
 
-        drwr.colorCircle(par.bottom, 'lime', 3);
-        drwr.colorCircle(par.center, 'yellow');
+        paper.circleByPoint(par.bottom, 3).paint('lime');
+        paper.circleByPoint(par.center).paint('yellow');
 
         var radius = Math.sqrt(par.area / Math.PI);
-        drwr.circle(par.center, radius).attr({
-            stroke: 'yellow'
-        });
-        drwr.enclosedPath([par.b, par.bottom, par.a, par.top]).attr({
-            stroke: 'lightblue'
-        });
+        paper.circleByPoint(par.center, radius).attr('stroke', 'yellow');
+        paper.enclosedPathByPoints([par.b, par.bottom, par.a, par.top]).attr('stroke', 'lightblue');
     </script>
 </body>
 </html>

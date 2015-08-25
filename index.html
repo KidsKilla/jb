@@ -19,7 +19,7 @@
 
     <div id="status">Draw your dots...</div>
     <script>
-        function Par(top, a, b) {
+        function Parallelogram(top, a, b) {
             this.top = top;
             this.a = a;
             this.b = b;
@@ -95,7 +95,7 @@
             return this;
         };
 
-        function CompactPar(p1, p2, p3) {
+        function CompactParallelogram(p1, p2, p3) {
             var d12 = p1.distanceTo(p2);
             var d23 = p2.distanceTo(p3);
             var d31 = p3.distanceTo(p1);
@@ -108,10 +108,10 @@
             var base = [p1, p2, p3].filter(function (p) {
                 return p !== top;
             });
-            return new Par(top, base[0], base[1]);
+            return new Parallelogram(top, base[0], base[1]);
         }
 
-        var par = new Par(
+        var par = new Parallelogram(
             new Point(500, 200),
             new Point(200, 200),
             new Point(350, 360)

@@ -24,4 +24,5 @@ grunt bild
 ## View
 
 ```
-open ./dist
+open ./dist/index.html
+```

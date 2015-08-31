@@ -16,28 +16,38 @@
     </script>
     <div class="status">
         <div id="status">
-            <template id="no_circles"><h1>Set first point...</h1></template>
-            <template id="one_circle"><h1>Two points more.</h1></template>
-            <template id="two_circles"><h1>Last point left!</h1></template>
+            <template id="no_circles" title="First point"><h1>Set first point...</h1></template>
+            <template id="one_circle" title="Second point"><h1>Two points more.</h1></template>
+            <template id="two_circles" title="Third point"><h1>Last point left!</h1></template>
             <template id="all_circles">
                 <h1>Voila!</h1>
                 <table>
-                    <tr>
-                        <td>First point</td>
-                        <td>x: ${formatNumber(a.x)}, y: ${formatNumber(a.y)}</td>
-                    </tr>
-                    <tr>
-                        <td>Second point</td>
-                        <td>x: ${formatNumber(top.x)}, y: ${formatNumber(top.y)}</td>
-                    </tr>
-                    <tr>
-                        <td>Third point</td>
-                        <td>x: ${formatNumber(b.x)}, y: ${formatNumber(b.y)}</td>
-                    </tr>
-                    <tr>
-                        <td>Area</td>
-                        <td>${formatNumber(area, 0)} px</td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <th>Area</th>
+                            <td colspan="2">${formatNumber(area, 0)} px</td>
+                        </tr>
+                    </tbody>
+
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <td>x</td>
+                            <td>y</td>
+                        </tr>
+                        <tr>
+                            <th>First point</th>
+                            <td>${formatNumber(a.x)}</td><td>${formatNumber(a.y)}</td>
+                        </tr>
+                        <tr>
+                            <th>Second point</th>
+                            <td>${formatNumber(top.x)}</td><td>${formatNumber(top.y)}</td>
+                        </tr>
+                        <tr>
+                            <th>Third point</th>
+                            <td>${formatNumber(b.x)}</td><td>${formatNumber(b.y)}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </template>
         </div>
@@ -61,14 +71,15 @@
     <script src="./js/index.js"></script>
     <script>
         new Stage(0, 0, '100%', '100%')
-            .setStatus('status')
+            .setStatusElement('status')
             .setResetButton('reset')
-            .run(
+            .setSteps(
                 'no_circles',
                 'one_circle',
                 'two_circles',
                 'all_circles'
-            );
+            )
+            .run();
     </script>
 </body>
 </html>

@@ -1,14 +1,13 @@
 'use strict';
 
-var Point = require('./point');
-var Parallelogram = require('./parallelogram');
-var raph = require('./raph');
-
 module.exports = View;
 
+/**
+ * Draws figure: 3 red circles, blue parallelogram and yellow circle
+ * @param {Raphael.Paper} paper
+ * @constructor
+ */
 function View(paper) {
-    raph.install();
-
     this.circle = paper.circle().hide();
     this.path = paper.path('').hide();
 
@@ -23,37 +22,27 @@ function View(paper) {
         this[k].node.setAttribute('id', k);
     }, this);
 
-    this.paper = paper;
+    this._paper = paper;
 }
 
-View.prototype.setTop = function (x, y) {
-    return this._setCircle(this.top, x, y);
-};
-
-View.prototype.setA = function (x, y) {
-    return this._setCircle(this.a, x, y);
-};
-
-View.prototype.setB = function (x, y) {
-    return this._setCircle(this.b, x, y);
-};
-
-View.prototype._setCircle = function (circle, x, y) {
-    circle
-        .attr({cx: x, cy: y})
-        .fadeIn(200)
-        .radiusFrom(100, 100);
-    return this;
-};
-
+/**
+ * Shows all stuff except circles: they must be shown separately
+ * @returns {View}
+ */
 View.prototype.show = function () {
     this.circle.fadeIn();
     this.path.fadeIn();
 
     this.bottom.fadeIn();
     this.center.fadeIn();
+    return this;
 };
 
+/**
+ * Draws figure according to provided parallelogram
+ * @param {Parallelogram} par
+ * @returns {View}
+ */
 View.prototype.drawParallelogram = function (par) {
     this.top.attr({
         cx: par.top.x,
@@ -81,7 +70,7 @@ View.prototype.drawParallelogram = function (par) {
     this.circle.attr({
         cx: par.center.x,
         cy: par.center.y,
-        r: Math.sqrt(par.area / Math.PI),
+        r: Math.sqrt(par.area / Math.PI)
     });
 
     var coordPairs = [par.b, par.bottom, par.a, par.top]
@@ -91,8 +80,13 @@ View.prototype.drawParallelogram = function (par) {
     this.path.attr({
         path: 'M' + coordPairs.join('L') + 'Z'
     });
+    return this;
 };
 
+/**
+ * Hides all figure
+ * @returns {View}
+ */
 View.prototype.hide = function () {
     this.circle.hide();
     this.path.hide();
@@ -103,4 +97,5 @@ View.prototype.hide = function () {
     this.a.hide();
     this.b.hide();
     this.top.hide();
+    return this;
 };

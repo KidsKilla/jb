@@ -6,6 +6,9 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         browserify: {
+            options: {
+                debug: true,
+            },
             main: {
                 files: [
                     {src: ['./src/js/index.js'], dest: './dist/js/index.js'}

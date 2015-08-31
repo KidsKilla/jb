@@ -17,6 +17,11 @@ html {
     margin: 0;
 }
 
+.status th {
+    font-weight: 100;
+    padding-right: 10px;
+}
+
 #reset {
     position: absolute;
     z-index: 2;
@@ -57,7 +62,6 @@ template {
     display: block;
     border-bottom: 0;
 }
-
 
 /*************
  SVG

@@ -4,6 +4,14 @@ var Point = require('./point');
 
 module.exports = Parallelogram;
 
+/**
+ * Helper class to calculate center, area ant the bottom coordinate, based on three coordinates
+ *
+ * @param {Point} top - the coordinate, opposite to "bottom" coordinate
+ * @param {Point} a
+ * @param {Point} b
+ * @constructor
+ */
 function Parallelogram(top, a, b) {
     this.top = top;
     this.a = a;
@@ -11,6 +19,11 @@ function Parallelogram(top, a, b) {
     this.calc();
 }
 
+/**
+ * Recalculates center, area ant the bottom coordinate
+ *
+ * @returns {Parallelogram}
+ */
 Parallelogram.prototype.calc = function () {
     this.center = this.a.getCenterBetween(this.b);
     this.bottom = this.center.getReflectionOf(this.top);

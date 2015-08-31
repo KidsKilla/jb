@@ -15,7 +15,7 @@
     "grunt-contrib-copy": "^0.8.1"
   },
   "repository": {
-    "type": "git"
+    "type": "git",
     "url": "git+https://github.com/KidsKilla/jb.git"
   },
   "author": "Maxim Grishaev",

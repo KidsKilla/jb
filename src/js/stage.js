@@ -1,149 +1,139 @@
 'use strict';
 
+var raph = require('./raph');
 var View = require('./view');
-var Point = require('./point');
-var Parallelogram = require('./parallelogram');
 var Raphael = require('raphael');
-var template = require('lodash/string/template');
+var StepsCollection = require('./steps-collection');
+var dom = require('./dom');
 
 module.exports = Stage;
 
+/**
+ * The program
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number|string} w
+ * @param {number|string} h
+ * @constructor
+ */
 function Stage(x, y, w, h) {
-    this._steps = [];
-    this._i = 0;
-    this._statusTmplate = null;
+    raph.install();
+    this._steps = new StepsCollection();
+    this._statusTmplater = null;
+    this._statusElement = null;
+    this._resetButton = null;
+    this._parallelogram = null;
 
-    this._onClick = this._onClick_.bind(this);
+    this._onClick = function (evt) {
+        this._nextStep(evt.clientX, evt.clientY);
+    }.bind(this);
 
-    this.paper = Raphael(x, y, w, h);
-    this.view = new View(this.paper);
+    this._paper = Raphael(x, y, w, h);
+    this._view = new View(this._paper);
 }
 
-Stage.prototype.setStatus = function (id) {
-    this._statusElement = getElementById(id);
+/**
+ * Binds status element to stage: rendered status html will be shown there
+ *
+ * @param {string} id
+ * @returns {Stage}
+ */
+Stage.prototype.setStatusElement = function (id) {
+    this._statusElement = dom.id(id);
     return this;
 };
 
+/**
+ * Binds reset button to stage
+ *
+ * @param {string} id
+ * @returns {Stage}
+ */
 Stage.prototype.setResetButton = function (id) {
-    this._resetButton = getElementById(id);
-    this._resetButton.addEventListener('click', this.reset.bind(this));
+    this._resetButton = dom.id(id);
+    dom.on('click', this._resetButton, this.reset.bind(this));
     return this;
 };
 
+/**
+ * Initializes steps:
+ * receives id of templates to get status text and title for circles
+ *
+ * @param {string} firstId
+ * @param {string} secondId
+ * @param {string} thirdId
+ * @param {string} fullViewId
+ * @returns {Stage}
+ */
+Stage.prototype.setSteps = function (firstId, secondId, thirdId, fullViewId) {
+    this._steps.add(dom.id(firstId), this._view.a);
+    this._steps.add(dom.id(secondId), this._view.top);
+    this._steps.add(dom.id(thirdId), this._view.b);
+
+    this._statusTmplater = dom.tmpl(fullViewId);
+
+    return this;
+};
+
+/**
+ * Resets stage state to initial and runs again
+ * @returns {Stage}
+ */
 Stage.prototype.reset = function () {
-    this._resetButton.style.display = 'none';
-    this.view.hide();
-    this._i = 0;
-    this._startSteps();
+    dom.hide(this._resetButton);
+    this._view.hide();
+    this._steps.index = 0;
+    this.run();
     return this;
 };
 
-Stage.prototype._startSteps = function () {
-    this._setStatusHtml(this._steps[0].html);
-    this.paper.canvas.addEventListener('click', this._onClick);
-};
-
-Stage.prototype.run = function (firstId, secondId, thirdId, lastId) {
-    this._steps = [
-        new Step(firstId),
-        new Step(secondId),
-        new Step(thirdId)
-    ];
-
-    var lastStep = new Step(lastId);
-    this._statusTmplate = template(lastStep.html);
-
-    this._startSteps();;
-
+/**
+ * @returns {Stage}
+ */
+Stage.prototype.run = function () {
+    var firstHtml = this._steps.getCurrent().html;
+    this._setStatusHtml(firstHtml);
+    this._paper.canvas.addEventListener('click', this._onClick);
     return this;
-};
-
-Stage.prototype._onClick_ = function callee(evt) {
-    this._nextStep(evt.clientX, evt.clientY);
 };
 
 Stage.prototype._nextStep = function (x, y) {
-    this._resetButton.style.display = 'inline';
-    this._setStep(x, y);
-    var isOnLast = ++this._i === this._steps.length;
-    if (isOnLast) {
-        this._start();
+    this._steps.getCurrent().show(x, y);
+
+    dom.show(this._resetButton);
+
+    var isFullViewReady = this._steps.next().index === 0;
+    if (isFullViewReady) {
+        this._showFullView();
     } else {
-        this._setStatusHtml(this._steps[this._i].html);
+        this._setStatusHtml(this._steps.getCurrent().html);
     }
 };
 
-Stage.prototype._setStep = function (x, y) {
-    var step = this._steps[this._i];
-    step.point = new Point(x, y);
+Stage.prototype._showFullView = function () {
+    dom.off('click', this._paper.canvas, this._onClick);
+    this._parallelogram = this._steps.createParallelogram(1, 0, 2);
 
-    switch (this._i) {
-        case 0:
-            this.view.setA(x, y);
-            break;
-        case 1:
-            this.view.setTop(x, y);
-            break;
-        case 2:
-            this.view.setB(x, y);
-            break;
-        default:
-            throw new Error('No more steps');
-    }
-};
+    this._render();
+    this._view.show();
 
-Stage.prototype._start = function () {
-    this.paper.canvas.removeEventListener('click', this._onClick);
-
-    var par = new Parallelogram(
-        this._steps[1].point,
-        this._steps[0].point,
-        this._steps[2].point
+    this._steps.startDrag(
+        this._render.bind(this)
     );
-
-    this._draw(par);
-    this.view.show();
-
-    this._startDrag(par);
 };
 
-Stage.prototype._draw = function (par) {
-    par.calc();
+Stage.prototype._render = function () {
+    this._parallelogram.calc();
 
-    var html = this._statusTmplate(par);
+    var html = this._statusTmplater(this._parallelogram);
     this._setStatusHtml(html);
 
-    this.view.drawParallelogram(par);
+    this._view.drawParallelogram(this._parallelogram);
 };
 
 Stage.prototype._setStatusHtml = function (html) {
-    this._statusElement.innerHTML = html;
+    dom.html(this._statusElement, html);
 };
 
-Stage.prototype._startDrag = function (par) {
-    this._startDragCircle(this.view.a, par.a, par);
-    this._startDragCircle(this.view.b, par.b, par);
-    this._startDragCircle(this.view.top, par.top, par);
-};
 
-Stage.prototype._startDragCircle = function (circle, point, par) {
-    circle.drag(function (dx, dy, x, y) {
-        point.x = x;
-        point.y = y;
-        this._draw(par);
-    }.bind(this));
-};
-
-function Step(id) {
-    var el = getElementById(id);
-    return {
-        id: id,
-        el: el,
-        html: el.innerHTML,
-        point: null,
-    };
-}
-
-function getElementById(id) {
-    return window.document.getElementById(id);
-}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./css/jb.css">
+</head>
+<body>
+    <script>
+        function formatNumber(num, prescision) {
+            prescision = prescision == null
+                ? ((num % 1) > .01) ? 2 : 0
+                : prescision;
+            return num.toFixed(prescision);
+        }
+    </script>
+    <div class="status">
+        <div id="status">
+            <template id="no_circles"><h1>Set first point...</h1></template>
+            <template id="one_circle"><h1>Two points more.</h1></template>
+            <template id="two_circles"><h1>Last point left!</h1></template>
+            <template id="all_circles">
+                <h1>Voila!</h1>
+                <table>
+                    <tr>
+                        <td>First point</td>
+                        <td>x: ${formatNumber(a.x)}, y: ${formatNumber(a.y)}</td>
+                    </tr>
+                    <tr>
+                        <td>Second point</td>
+                        <td>x: ${formatNumber(top.x)}, y: ${formatNumber(top.y)}</td>
+                    </tr>
+                    <tr>
+                        <td>Third point</td>
+                        <td>x: ${formatNumber(b.x)}, y: ${formatNumber(b.y)}</td>
+                    </tr>
+                    <tr>
+                        <td>Area</td>
+                        <td>${formatNumber(area, 0)} px</td>
+                    </tr>
+                </table>
+            </template>
+        </div>
+    </div>
+    <button id="reset">Reset</button>
+    <div id="about">
+        <h2>About</h2>
+        <div class="text">
+            <p>
+            First, select three points. They will be highlighted with red circles.
+            After you set all three, you'll see a blue parallelogram, having three of its corners in the points.
+            And yet a yellow circle, with the same area and the centre of mass as the parallelogram.
+            </p>
+            <p>
+            You'll see coordinates of the selected points as well as the area of the parallelogram and circle.
+            You are free to move around the points.
+            </p>
+            <p>Author: Maxim Grishaev</p>
+        </div>
+   </div>
+    <script src="./js/index.js"></script>
+    <script>
+        new Stage(0, 0, '100%', '100%')
+            .setStatus('status')
+            .setResetButton('reset')
+            .run(
+                'no_circles',
+                'one_circle',
+                'two_circles',
+                'all_circles'
+            );
+    </script>
+</body>
+</html>

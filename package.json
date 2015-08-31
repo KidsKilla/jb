@@ -1,0 +1,31 @@
+{
+  "name": "jb",
+  "version": "1.0.0",
+  "description": "geometry stuff",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/grunt build",
+    "start": "npm run build && open ./dist/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-browserify": "^4.0.0",
+    "grunt-contrib-copy": "^0.8.1"
+  },
+  "repository": {
+    "type": "git"
+    "url": "git+https://github.com/KidsKilla/jb.git"
+  },
+  "author": "Maxim Grishaev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KidsKilla/jb/issues"
+  },
+  "homepage": "https://github.com/KidsKilla/jb#readme",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "raphael": "^2.1.4"
+  }
+}

@@ -1,0 +1,131 @@
+html {
+    background: #333;
+    color: #fff;
+    font: 100 13px Georgia,Arial,sans-serif;
+}
+
+.status {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-align: left;
+}
+
+.status h1 {
+    font-size: 36px;
+    padding: 0 0 10px;
+    margin: 0;
+}
+
+#reset {
+    position: absolute;
+    z-index: 2;
+    top: 20px;
+    right: 20px;
+    font-size: 15px;
+    cursor: pointer;
+    display: none;
+}
+
+template {
+    display: none;
+}
+
+#about {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 20px 10px;
+    z-index: 2;
+}
+
+#about .text {
+    overflow: hidden;
+    display: none;
+}
+
+#about:hover .text {
+    display: block;
+}
+
+#about h2 {
+    display: inline-block;
+    border-bottom: 1px dashed #fff;
+}
+
+#about:hover h2 {
+    display: block;
+    border-bottom: 0;
+}
+
+
+/*************
+ SVG
+ */
+
+#a {
+    fill: red;
+    stroke: none;
+}
+
+#b {
+    fill: Crimson;
+    stroke: none;
+}
+
+#top {
+    fill: IndianRed;
+    stroke: none;
+}
+
+#bottom {
+    stroke: lightblue;
+}
+
+@keyframes bigger {
+    from {
+        r: 11px;
+    }
+    to {
+        r: 15px;
+    }
+}
+
+@keyframes smaller {
+    from {
+        r: 15px;
+    }
+    to {
+        r: 11px;
+    }
+}
+
+#a,
+#b,
+#top {
+    animation-name: smaller;
+    animation-duration: 100ms;
+    animation-fill-mode: forwards;
+    cursor: pointer;
+}
+
+#a:hover,
+#b:hover,
+#top:hover {
+    animation-name: bigger;
+    animation-duration: 100ms;
+    animation-fill-mode: forwards;
+}
+
+#center {
+    fill: yellow;
+    stroke: none;
+}
+
+#path {
+    stroke: lightblue;
+}
+
+#circle {
+    stroke: yellow;
+}

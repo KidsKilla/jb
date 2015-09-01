@@ -11,18 +11,16 @@ The user is free to move around the points.
 
 ## Install
 
-```
-npm i
-```
+Install Node.js, clone this repo and then run `npm i` in your console
 
 ## Build
 
 ```
-grunt bild
+npm run build
+# or
+grunt build
 ```
 
 ## View
 
-```
-open ./dist/index.html
-```
+open `./dist/index.html` in your browser
